@@ -7,11 +7,13 @@ on:
 
 jobs:
   test:
+    name: ${{ matrix.runtime }} / dbal ${{ matrix.dbal }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         runtime: [revolt, amp, react, phasync, swoole]
+        dbal: ['^3.8', '^4.0']
     env:
       FI_RUNTIME: ${{ matrix.runtime }}
     services:
@@ -59,7 +61,10 @@ jobs:
 
       - name: Install
         working-directory: work/dbal
-        run: composer update --no-interaction --no-progress
+        run: |
+          composer require --no-update --no-interaction "doctrine/dbal:${{ matrix.dbal }}"
+          composer update --no-interaction --no-progress
+          composer show doctrine/dbal | grep versions
 
       - name: Tests
         working-directory: work/dbal

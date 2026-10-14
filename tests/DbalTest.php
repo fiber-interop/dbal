@@ -144,7 +144,10 @@ final class DbalTest extends TestCase
 
     public function testParams(): void
     {
-        $this->assertSame(['host' => 'h', 'driverClass' => \async\dbal\PgSQL\Driver::class], \async\dbal\params(['driver' => 'pgsql', 'host' => 'h']));
+        $ns = \interface_exists(\Doctrine\DBAL\Driver\ServerInfoAwareConnection::class) ? 'async\\dbal\\V3\\' : 'async\\dbal\\';
+        $this->assertSame(['host' => 'h', 'driverClass' => $ns . 'PgSQL\\Driver'], \async\dbal\params(['driver' => 'pgsql', 'host' => 'h']));
+        $this->assertSame($ns . 'Mysqli\\Driver', \async\dbal\params(['driver' => 'mysqli'])['driverClass']);
+        $this->assertTrue(\class_exists(\async\dbal\params(['driver' => 'mysqli'])['driverClass']));
         $this->assertSame(['driverClass' => 'X'], \async\dbal\params(['driverClass' => 'X']));
         $this->expectExceptionMessage('PDO has no non-blocking API');
         \async\dbal\params(['driver' => 'pdo_mysql']);

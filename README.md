@@ -1,6 +1,6 @@
 # fiber-interop/dbal
 
-Doctrine DBAL 4 drivers whose queries are cooperative inside `async\run()` on any
+Doctrine DBAL 3 and 4 drivers whose queries are cooperative inside `async\run()` on any
 [fiber-interop](https://fiber-interop.github.io) adapter (Revolt, Amp, ReactPHP, phasync, Swoole).
 DBAL-based code (Symfony, Doctrine ORM) keeps working unchanged; while one task waits for the
 database, the others run.
@@ -51,6 +51,23 @@ Queries are not emulated by client-side interpolation. Under the phasync extensi
 its runtime hook, mysqli's socket I/O is cooperative anyway, so these do not block there. The fix
 belongs in php-src (`MYSQLI_ASYNC` for `mysqli_stmt::execute()`). pgsql has no such limitation.
 
+## DBAL versions
+
+`doctrine/dbal: ^3.8 || ^4.0`. The two majors' driver interfaces differ (`ParameterType` is an
+int in 3 and an enum in 4; `quote()`, `lastInsertId()`, `bindParam()` and the transaction methods
+changed signatures), so there are two parallel sets of classes with the same behaviour:
+
+| DBAL | mysqli | pgsql |
+|---|---|---|
+| 4 | `async\dbal\Mysqli\Driver` | `async\dbal\PgSQL\Driver` |
+| 3.8+ | `async\dbal\V3\Mysqli\Driver` | `async\dbal\V3\PgSQL\Driver` |
+
+`async\dbal\params()` picks the set for the installed major (DBAL 3 is detected by
+`Doctrine\DBAL\Driver\ServerInfoAwareConnection`, which 4 removed). Pass a `driverClass`
+yourself only if you pin a major. Each set wraps that major's own DBAL classes (connect, result,
+exception conversion); a class from the other set fails to load, but is never autoloaded unless
+named. The test suite runs under both majors in CI.
+
 ## Limits
 
 - Connecting is DBAL's blocking `pg_connect()` / `mysqli::real_connect()` (DBAL connects lazily,
@@ -59,8 +76,6 @@ belongs in php-src (`MYSQLI_ASYNC` for `mysqli_stmt::execute()`). pgsql has no s
 - Under Swoole, mysqli is cooperative only on connections opened inside a coroutine, so let DBAL
   connect lazily inside `async\run()`.
 - On mysqli, `query()` buffers the whole result (`MYSQLI_STORE_RESULT`), as DBAL's driver does.
-- DBAL 4 only (DBAL 3's driver interfaces differ: `Result`/`Statement` signatures and
-  `ParameterType` as int constants).
 
 ## License
 
