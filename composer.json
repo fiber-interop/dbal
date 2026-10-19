@@ -1,13 +1,13 @@
 {
     "name": "fiber-interop/dbal",
-    "description": "Doctrine DBAL drivers that run queries through fiber-interop/mysqli and fiber-interop/pg: cooperative DBAL queries inside async\\run() with one line of configuration.",
+    "description": "Doctrine DBAL drivers that run queries through fiber-interop/mysqli and fiber-interop/pg: cooperative DBAL queries inside fiber\\run() with one line of configuration.",
     "type": "library",
     "license": "MIT",
     "require": {
         "php": "^8.1",
         "doctrine/dbal": "^3.8 || ^4.0",
-        "fiber-interop/api": "^0.2",
-        "fiber-interop/mysqli": "^0.1"
+        "fiber-interop/api": "^0.3",
+        "fiber-interop/mysqli": "^0.2"
     },
     "require-dev": {
         "phpunit/phpunit": "^10.5 || ^11",
@@ -19,7 +19,7 @@
     },
     "autoload": {
         "psr-4": {
-            "async\\dbal\\": "src/"
+            "fiber\\dbal\\": "src/"
         },
         "files": [
             "src/functions.php"
@@ -27,12 +27,12 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "async\\dbal\\Tests\\": "tests/"
+            "fiber\\dbal\\Tests\\": "tests/"
         }
     },
     "extra": {
         "branch-alias": {
-            "dev-main": "0.2.x-dev"
+            "dev-main": "0.3.x-dev"
         }
     },
     "minimum-stability": "dev",
@@ -96,7 +96,7 @@
         }
     ],
     "suggest": {
-        "ext-mysqli": "for async\\dbal\\Mysqli\\Driver (DBAL 4) / async\\dbal\\V3\\Mysqli\\Driver (DBAL 3)",
-        "ext-pgsql": "for async\\dbal\\PgSQL\\Driver (DBAL 4) / async\\dbal\\V3\\PgSQL\\Driver (DBAL 3)"
+        "ext-mysqli": "for fiber\\dbal\\Mysqli\\Driver (DBAL 4) / fiber\\dbal\\V3\\Mysqli\\Driver (DBAL 3)",
+        "ext-pgsql": "for fiber\\dbal\\PgSQL\\Driver (DBAL 4) / fiber\\dbal\\V3\\PgSQL\\Driver (DBAL 3)"
     }
 }

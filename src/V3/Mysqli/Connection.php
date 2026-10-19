@@ -1,6 +1,6 @@
 <?php
 
-namespace async\dbal\V3\Mysqli;
+namespace fiber\dbal\V3\Mysqli;
 
 use Doctrine\DBAL\Cache\ArrayResult;
 use Doctrine\DBAL\Driver\Mysqli\Connection as MysqliConnection;
@@ -10,8 +10,8 @@ use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\ParameterType;
 
 /**
- * DBAL 3 counterpart of async\dbal\Mysqli\Connection: query(), exec() and transaction control go
- * through async\mysqli\query(); errors are DBAL's ConnectionError. The rest is DBAL's own.
+ * DBAL 3 counterpart of fiber\dbal\Mysqli\Connection: query(), exec() and transaction control go
+ * through fiber\mysqli\query(); errors are DBAL's ConnectionError. The rest is DBAL's own.
  */
 final class Connection implements ServerInfoAwareConnection
 {
@@ -92,7 +92,7 @@ final class Connection implements ServerInfoAwareConnection
     {
         $m = $this->inner->getNativeConnection();
         try {
-            $r = \async\mysqli\query($m, $sql);
+            $r = \fiber\mysqli\query($m, $sql);
         } catch (\mysqli_sql_exception $e) {
             throw ConnectionError::upcast($e);
         }

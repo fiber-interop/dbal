@@ -1,6 +1,6 @@
 <?php
 
-namespace async\dbal\Mysqli;
+namespace fiber\dbal\Mysqli;
 
 use Doctrine\DBAL\Cache\ArrayResult;
 use Doctrine\DBAL\Driver\Connection as ConnectionInterface;
@@ -10,7 +10,7 @@ use Doctrine\DBAL\Driver\Statement;
 
 /**
  * Wraps DBAL's Mysqli\Connection. query(), exec() and transaction control go through
- * async\mysqli\query() (only the calling task waits inside async\run()); errors are raised as
+ * fiber\mysqli\query() (only the calling task waits inside fiber\run()); errors are raised as
  * DBAL's ConnectionError, so DBAL's exception conversion applies unchanged. prepare(), quote(),
  * lastInsertId() and the rest are DBAL's own.
  */
@@ -85,7 +85,7 @@ final class Connection implements ConnectionInterface
     {
         $m = $this->inner->getNativeConnection();
         try {
-            $r = \async\mysqli\query($m, $sql);
+            $r = \fiber\mysqli\query($m, $sql);
         } catch (\mysqli_sql_exception $e) {
             throw ConnectionError::upcast($e);
         }

@@ -1,13 +1,13 @@
 <?php
 
-namespace async\dbal\Tests;
+namespace fiber\dbal\Tests;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Exception\SyntaxErrorException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use function async\{run, go, await, await_all};
+use function fiber\{run, go, await, await_all};
 
 final class DbalTest extends TestCase
 {
@@ -27,7 +27,7 @@ final class DbalTest extends TestCase
     private static function conn(string $driver): Connection
     {
         $e = static fn(string $k, string $d) => getenv($k) ?: $d;
-        $c = DriverManager::getConnection(\async\dbal\params($driver === 'mysqli' ? [
+        $c = DriverManager::getConnection(\fiber\dbal\params($driver === 'mysqli' ? [
             'driver' => 'mysqli', 'host' => $e('MYSQLI_HOST', '127.0.0.1'), 'port' => (int) $e('MYSQLI_PORT', '13307'),
             'user' => $e('MYSQLI_USER', 'root'), 'password' => $e('MYSQLI_PASSWORD', 'test'), 'dbname' => 'fi',
         ] : [
@@ -63,7 +63,7 @@ final class DbalTest extends TestCase
             $done = false;
             $q = go(function () use ($c, $d, &$done) { $c->fetchOne(self::sleep($d, 0.2)); $done = true; });
             $t = go(function () use (&$n, &$done) {
-                while (!$done) { $n++; \async\sleep(0.01); }
+                while (!$done) { $n++; \fiber\sleep(0.01); }
             });
             await_all([$q, $t]);
             return $n;
@@ -144,12 +144,12 @@ final class DbalTest extends TestCase
 
     public function testParams(): void
     {
-        $ns = \interface_exists(\Doctrine\DBAL\Driver\ServerInfoAwareConnection::class) ? 'async\\dbal\\V3\\' : 'async\\dbal\\';
-        $this->assertSame(['host' => 'h', 'driverClass' => $ns . 'PgSQL\\Driver'], \async\dbal\params(['driver' => 'pgsql', 'host' => 'h']));
-        $this->assertSame($ns . 'Mysqli\\Driver', \async\dbal\params(['driver' => 'mysqli'])['driverClass']);
-        $this->assertTrue(\class_exists(\async\dbal\params(['driver' => 'mysqli'])['driverClass']));
-        $this->assertSame(['driverClass' => 'X'], \async\dbal\params(['driverClass' => 'X']));
+        $ns = \interface_exists(\Doctrine\DBAL\Driver\ServerInfoAwareConnection::class) ? 'fiber\\dbal\\V3\\' : 'fiber\\dbal\\';
+        $this->assertSame(['host' => 'h', 'driverClass' => $ns . 'PgSQL\\Driver'], \fiber\dbal\params(['driver' => 'pgsql', 'host' => 'h']));
+        $this->assertSame($ns . 'Mysqli\\Driver', \fiber\dbal\params(['driver' => 'mysqli'])['driverClass']);
+        $this->assertTrue(\class_exists(\fiber\dbal\params(['driver' => 'mysqli'])['driverClass']));
+        $this->assertSame(['driverClass' => 'X'], \fiber\dbal\params(['driverClass' => 'X']));
         $this->expectExceptionMessage('PDO has no non-blocking API');
-        \async\dbal\params(['driver' => 'pdo_mysql']);
+        \fiber\dbal\params(['driver' => 'pdo_mysql']);
     }
 }

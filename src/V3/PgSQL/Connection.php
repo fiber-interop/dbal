@@ -1,6 +1,6 @@
 <?php
 
-namespace async\dbal\V3\PgSQL;
+namespace fiber\dbal\V3\PgSQL;
 
 use Doctrine\DBAL\Driver\PgSQL\Connection as DbalConnection;
 use Doctrine\DBAL\Driver\PgSQL\ConvertParameters;
@@ -13,7 +13,7 @@ use PgSql\Connection as PgSqlConnection;
 use PgSql\Result as PgSqlResult;
 
 /**
- * DBAL 3 counterpart of async\dbal\PgSQL\Connection: DBAL's PgSQL\Connection logic with
+ * DBAL 3 counterpart of fiber\dbal\PgSQL\Connection: DBAL's PgSQL\Connection logic with
  * pg_send_* and a cooperative wait. connect, quote and server version are DBAL's own.
  */
 final class Connection implements ServerInfoAwareConnection
@@ -90,16 +90,16 @@ final class Connection implements ServerInfoAwareConnection
         return $this->connection;
     }
 
-    /** Same as async\dbal\PgSQL\Connection::result() (that class cannot load under DBAL 3). */
+    /** Same as fiber\dbal\PgSQL\Connection::result() (that class cannot load under DBAL 3). */
     public static function result(PgSqlConnection $c, bool $sent): PgSqlResult
     {
         if (!$sent) {
             throw new Exception(\pg_last_error($c));
         }
-        if (\async\Registry::$active !== []) {
+        if (\fiber\Registry::$active !== []) {
             $socket = \pg_socket($c);
             while (\pg_consume_input($c) && \pg_connection_busy($c)) {
-                \async\readable($socket);
+                \fiber\readable($socket);
             }
         }
         $result = @\pg_get_result($c);

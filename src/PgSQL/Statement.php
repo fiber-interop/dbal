@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace async\dbal\PgSQL;
+namespace fiber\dbal\PgSQL;
 
 use Doctrine\DBAL\Driver\PgSQL\Result;
 

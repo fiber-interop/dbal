@@ -1,6 +1,6 @@
 <?php
 
-namespace async\dbal;
+namespace fiber\dbal;
 
 /**
  * Returns DriverManager connection params with `driver` => mysqli / pgsql replaced by the

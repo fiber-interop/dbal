@@ -1,6 +1,6 @@
 <?php
 
-namespace async\dbal\PgSQL;
+namespace fiber\dbal\PgSQL;
 
 use Doctrine\DBAL\Driver\Connection as ConnectionInterface;
 use Doctrine\DBAL\Driver\Exception\NoIdentityValue;
@@ -15,7 +15,7 @@ use PgSql\Result as PgSqlResult;
 /**
  * DBAL's PgSQL\Connection with the wait for each result made cooperative: queries and prepared
  * statements are sent with pg_send_query() / pg_send_prepare() / pg_send_execute() exactly as
- * DBAL does, and inside async\run() the task waits on pg_socket() before pg_get_result().
+ * DBAL does, and inside fiber\run() the task waits on pg_socket() before pg_get_result().
  * Results, exceptions (SQLSTATE included) and quoting are DBAL's own. Outside run() it is DBAL's
  * blocking behaviour.
  */
@@ -98,10 +98,10 @@ final class Connection implements ConnectionInterface
         if (!$sent) {
             throw new Exception(\pg_last_error($c));
         }
-        if (\async\Registry::$active !== []) {
+        if (\fiber\Registry::$active !== []) {
             $socket = \pg_socket($c);
             while (\pg_consume_input($c) && \pg_connection_busy($c)) {
-                \async\readable($socket);
+                \fiber\readable($socket);
             }
         }
         $result = @\pg_get_result($c);

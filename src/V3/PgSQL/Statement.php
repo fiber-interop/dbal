@@ -1,6 +1,6 @@
 <?php
 
-namespace async\dbal\V3\PgSQL;
+namespace fiber\dbal\V3\PgSQL;
 
 use Doctrine\DBAL\Driver\PgSQL\Exception\UnknownParameter;
 use Doctrine\DBAL\Driver\PgSQL\Result;
